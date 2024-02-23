@@ -2,6 +2,7 @@ using NUnit.Framework;
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection.Metadata;
 
 namespace TestApp.UnitTests;
@@ -254,12 +255,12 @@ public class ExceptionTests
         string exceptionMessage = Assert.Throws<KeyNotFoundException>(() => this._exceptions.KeyNotFoundFindValueByKey(kvp, key)).Message;
         //Assert
 
-        Assert.Throws<KeyNotFoundException>(()=> this._exceptions.KeyNotFoundFindValueByKey(kvp, key));
+        Assert.Throws<KeyNotFoundException>(() => this._exceptions.KeyNotFoundFindValueByKey(kvp, key));
         Assert.AreEqual("The specified key was not found in the dictionary.", exceptionMessage);
     }
 
 
-  
+
 
 
     [Test]
@@ -285,10 +286,10 @@ public class ExceptionTests
 
 
         //Act
-       string exceptonMessage = Assert.Throws<OverflowException>(() => this._exceptions.OverflowAddNumbers(a, b)).Message;
+        string exceptonMessage = Assert.Throws<OverflowException>(() => this._exceptions.OverflowAddNumbers(a, b)).Message;
         //Assert
-        Assert.Throws<OverflowException>(()=> this._exceptions.OverflowAddNumbers(a,b));
-       Assert.AreEqual("Arithmetic overflow occurred during addition.", exceptonMessage);
+        Assert.Throws<OverflowException>(() => this._exceptions.OverflowAddNumbers(a, b));
+        Assert.AreEqual("Arithmetic overflow occurred during addition.", exceptonMessage);
     }
 
     [Test]
@@ -306,15 +307,22 @@ public class ExceptionTests
         Assert.AreEqual("Arithmetic overflow occurred during addition.", exceptonMessage);
     }
 
+
+
     [Test]
     public void Test_DivideNumbers_ValidDivision_ReturnsQuotient()
     {
 
         //Arrange
+        int divident = 6;
+        int divisor = 3;
 
+        int expected = 2;
         //Act
 
+        int actual = this._exceptions.DivideByZeroDivideNumbers(divident, divisor);
         //Assert
+        Assert.AreEqual(expected, actual);
 
 
     }
@@ -324,53 +332,165 @@ public class ExceptionTests
     {
 
         //Arrange
+        int divident = 6;
+        int divisor = 0;
+
 
         //Act
 
-        //Assert
+        string exceptionMessage = Assert.Throws<DivideByZeroException>(() => this._exceptions.DivideByZeroDivideNumbers(divident, divisor)).Message;
 
+        //Assert
+        Assert.Throws<DivideByZeroException>(() => this._exceptions.DivideByZeroDivideNumbers(divident, divisor));
+        Assert.AreEqual("Division by zero is not allowed.", exceptionMessage);
 
     }
+
+
+
 
     [Test]
     public void Test_SumCollectionElements_ValidCollectionAndIndex_ReturnsSum()
     {
 
         //Arrange
+        int[] numbers = { 1, 2, 3, 4, 5, 6, 7 };
+        int index = 3;
+
+        int expected = 22;
 
         //Act
+        int actual = this._exceptions.SumCollectionElements(numbers, index);
 
         //Assert
-
+        Assert.AreEqual(expected, actual);
     }
 
     [Test]
     public void Test_SumCollectionElements_NullCollection_ThrowsArgumentNullException()
     {
-        // TODO: finish test
+        //Arrange
+        int[] numbers = null;
+        int index = 3;
+        //Act
+        string exceptionMessage = Assert.Throws<ArgumentNullException>(() => this._exceptions.SumCollectionElements(numbers, index)).Message;
+
+
+        //Assert
+        Assert.Throws<ArgumentNullException>(() => this._exceptions.SumCollectionElements(numbers, index));
+        Assert.AreEqual("Collection cannot be null. (Parameter 'collection')", exceptionMessage);
     }
 
     [Test]
     public void Test_SumCollectionElements_IndexOutOfRange_ThrowsIndexOutOfRangeException()
     {
-        // TODO: finish test
+        //Arrange
+        int[] numbers = { 1, 2, 3, 4, 5, 6, 7 };
+        int index = 33;
+        //Act
+        string exceptionMessage = Assert.Throws<IndexOutOfRangeException>(() => this._exceptions.SumCollectionElements(numbers, index)).Message;
+
+
+        //Assert
+        Assert.Throws<IndexOutOfRangeException>(() => this._exceptions.SumCollectionElements(numbers, index));
+        Assert.AreEqual("Index has to be within bounds.", exceptionMessage);
+
     }
+
+
+    //public int GetElementAsNumber(Dictionary<string, string> dictionary, string key)
+    //{
+    //    if (!dictionary.ContainsKey(key))
+    //    {
+    //        throw new KeyNotFoundException("Key not found in the dictionary.");
+    //    }
+
+    //    string s = dictionary[key];
+    //    int n;
+    //    try
+    //    {
+    //        n = int.Parse(s);
+    //    }
+    //    catch (FormatException ex)
+    //    {
+    //        throw new FormatException("Can't parse string.", ex);
+    //    }
+
+    //    return n;
+    //}
+
+
 
     [Test]
     public void Test_GetElementAsNumber_ValidKey_ReturnsParsedNumber()
     {
-        // TODO: finish test
+        // Arrange
+        Dictionary<string, string> kvp = new Dictionary<string, string>()
+         {
+             {"John Doe", "5"},
+             {"Alice Smith", "21"},
+             {"Bob Johnson", "13"},
+             {"Emily Davis", "18"},
+             {"Michael Brown", "44"},
+         };
+
+        string key = "Alice Smith";
+        int expected = 21;
+        //Act
+        int actual = this._exceptions.GetElementAsNumber(kvp, key);
+
+        //Assert
+        Assert.AreEqual(expected, actual);
+
     }
 
     [Test]
     public void Test_GetElementAsNumber_KeyNotFound_ThrowsKeyNotFoundException()
     {
-        // TODO: finish test
+        //Arrange
+        Dictionary<string, string> kvp = new Dictionary<string, string>()
+         {
+             {"John Doe", "5"},
+             {"Alice Smith", "21"},
+             {"Bob Johnson", "13"},
+             {"Emily Davis", "18"},
+             {"Michael Brown", "44"},
+         };
+
+        string key = "Naomi Smith";
+
+
+        //Act
+        string exceptionMessage = Assert.Throws<KeyNotFoundException>(() => this._exceptions.GetElementAsNumber(kvp, key)).Message;
+
+        //Assert
+        Assert.Throws<KeyNotFoundException>(() => this._exceptions.GetElementAsNumber(kvp, key));
+        Assert.AreEqual("Key not found in the dictionary.", exceptionMessage);
+
     }
 
     [Test]
     public void Test_GetElementAsNumber_InvalidFormat_ThrowsFormatException()
     {
-        // TODO: finish test
+        //Arrange
+        Dictionary<string, string> kvp = new Dictionary<string, string>()
+         {
+             {"John Doe", "A"},
+             {"Alice Smith", "B"},
+              {"Bob Johnson", "C"},
+               {"Emily Davis", "A"},
+              {"Michael Brown", "B"},
+         };
+
+        string key = "Alice Smith";
+
+
+        //Act
+        string exceptionMessage = Assert.Throws<FormatException>(() => this._exceptions.GetElementAsNumber(kvp, key)).Message;
+
+        //Assert
+        Assert.Throws<FormatException>(() => this._exceptions.GetElementAsNumber(kvp, key));
+        Assert.AreEqual("Can't parse string.", exceptionMessage);
+
     }
 }
